@@ -64,6 +64,10 @@ export class TaskDbUtils {
         }
     }
 
+    listAllTasks(): Task[] {
+        return Array.from(this._mapOfTasks.values())
+    }
+
     hasTask(task_id: number) {
         return this._mapOfTasks.has(task_id);
     }

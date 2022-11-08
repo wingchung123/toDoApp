@@ -42,7 +42,7 @@ describe('Task DB Utils Empty DB', () => {
         expect(newTask.taskId).toBe(1);
     });
 
-    it('does increment next task id', () => {
+    it('does increment next_task_id', () => {
         // expect testDB is empty prior
         expect(testDB.size).toBe(0);
 
@@ -95,7 +95,7 @@ describe('Task DB Utils Non-empty DB', () => {
         expect(testDB.hasTask(InProgressTask4.taskId)).toBeFalsy();
     })
 
-    it('does add more items', () => {
+    it('does add more items and increments next_task_id', () => {
         // 3 tasks in DB
         expect(testDB.size).toBe(3);
 
@@ -138,6 +138,26 @@ describe('Task DB Utils Non-empty DB', () => {
         expect(testClosedTask.title).toBe(newTitle);
         expect(testBlockedTask.equals(BlockedTask3)).toBeTruthy();
 
+    });
+
+    it('does throw error when updating non-existent task', () => {
+        // 3 tasks in DB & InProgress task not in DB
+        expect(testDB.size).toBe(3);
+        expect(testDB.hasTask(InProgressTask4.taskId)).toBeFalsy()
+
+        let newUserId = 10;
+
+        InProgressTask4.userId = newUserId;
+
+        try {
+            testDB.updateTask(InProgressTask4);
+        } catch (e:any) {
+            expect(e).toBeInstanceOf(RangeError)
+            expect((e.message as string)).toContain(`${InProgressTask4.taskId}`)
+        }
+        
+        // size is unchanged
+        expect(testDB.size).toBe(3);
     });
 
     it('does get multiple items', () => {
@@ -189,7 +209,7 @@ describe('Task DB Utils Non-empty DB', () => {
 
     });
 
-    it('does throw error when trying to get removed tasks', () => {
+    it('does throw error when trying to get or update removed tasks', () => {
         // 3 tasks in DB
         expect(testDB.size).toBe(3);
 
@@ -206,7 +226,7 @@ describe('Task DB Utils Non-empty DB', () => {
         }
 
         try {
-            testDB.getTask(ClosedTask2.taskId);
+            testDB.updateTask(ClosedTask2);
         } catch (e:any) {
             expect(e).toBeInstanceOf(RangeError)
             expect((e.message as string)).toContain(`${ClosedTask2.taskId}`)
@@ -216,5 +236,33 @@ describe('Task DB Utils Non-empty DB', () => {
         let testBlockedTask = testDB.getTask(BlockedTask3.taskId);
         expect(testBlockedTask.equals(BlockedTask3)).toBeTruthy();
     });
+
+    it('does list tasks', () => {
+        // 3 tasks in DB
+        expect(testDB.size).toBe(3);
+
+        let listOfTasks = testDB.listAllTasks();
+
+        expect(testDB.size).toBe(3);
+        expect(listOfTasks).toContainEqual(OpenTask1);
+        expect(listOfTasks).toContainEqual(ClosedTask2);
+        expect(listOfTasks).toContainEqual(BlockedTask3);
+        expect(listOfTasks).not.toContainEqual(InProgressTask4);
+    });
+
+    it('does not list removed tasks', () => {
+        // 3 tasks in DB
+        expect(testDB.size).toBe(3);
+
+        testDB.removeTask(OpenTask1.taskId);
+        let listOfTasks = testDB.listAllTasks();
+
+        expect(testDB.size).toBe(2);
+        expect(listOfTasks).not.toContainEqual(OpenTask1);
+        expect(listOfTasks).toContainEqual(ClosedTask2);
+        expect(listOfTasks).toContainEqual(BlockedTask3);
+        expect(listOfTasks).not.toContainEqual(InProgressTask4);
+    });
+
 
 });
