@@ -62,5 +62,15 @@ export class Task {
         return isEqual(this, obj1)
     }
 
+    toJSON() {
+        return {
+            "taskId" : this._taskId,
+            "userId" : this._userId,
+            "title" : this._title,
+            "description" : this._description,
+            "status" : this._status
+        }
+    }
+
     
 }

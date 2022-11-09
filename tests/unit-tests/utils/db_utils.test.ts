@@ -1,5 +1,5 @@
 
-import { Task } from "struct/task";
+import { Status, Task } from "struct/task";
 import { TaskDbUtils } from "utils/db_utils";
 
 import { OpenTask1, ClosedTask2, BlockedTask3, InProgressTask4 } from "../../helpers/sampletasks";
@@ -117,12 +117,16 @@ describe('Task DB Utils Non-empty DB', () => {
 
         let newUserId = 10;
         let newTitle = "New title";
+        let newDescription = "New Description";
+        let newStatus = Status.Blocked;
 
         let testOpenTask: Task = testDB.getTask(OpenTask1.taskId);
         let testClosedTask: Task = testDB.getTask(ClosedTask2.taskId);
 
         testOpenTask.userId = newUserId;
-        testClosedTask.title = newTitle;
+        testOpenTask.title = newTitle;
+        testClosedTask.description = newDescription;
+        testClosedTask.status = newStatus;
 
         testDB.updateTask(testOpenTask);
         testDB.updateTask(testClosedTask)
@@ -134,8 +138,12 @@ describe('Task DB Utils Non-empty DB', () => {
 
         expect(testOpenTask.equals(OpenTask1)).toBeFalsy();
         expect(testOpenTask.userId).toBe(newUserId);
+        expect(testOpenTask.title).toBe(newTitle);
+
         expect(testClosedTask.equals(ClosedTask2)).toBeFalsy();
-        expect(testClosedTask.title).toBe(newTitle);
+        expect(testClosedTask.description).toBe(newDescription);
+        expect(testClosedTask.status).toBe(newStatus);
+
         expect(testBlockedTask.equals(BlockedTask3)).toBeTruthy();
 
     });

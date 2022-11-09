@@ -1,5 +1,5 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  moduleDirectories: ['node_modules', 'src', 'tests'],
+  moduleDirectories: ['node_modules', 'src', 'tests']
 };

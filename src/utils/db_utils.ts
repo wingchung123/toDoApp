@@ -1,8 +1,6 @@
 
 
-import { update } from "lodash";
-import { Status, Task } from "struct/task";
-import { getEnvironmentData } from "worker_threads";
+import { Status, Task } from "../struct/task";
 
 export class TaskDbUtils {
 
